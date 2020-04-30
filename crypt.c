@@ -1,3 +1,7 @@
+/* Program to encrypt data with a simple
+ * XOR encryption scheme by Philip R. Simonson.
+ */
+
 #include <stdio.h>
 #include <string.h>
 
