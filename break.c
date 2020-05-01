@@ -77,15 +77,18 @@ void generate(const char *cipher, int cipher_len, unsigned int index,
 	}
 
 	for(unsigned int i = 0; i < 26; i++) {
-		sprintf(guess + index, "%c", alpha_lower[i]);
+		guess[index] = alpha_lower[i];
+		guess[index+1] = '\0';
 		generate(cipher, cipher_len, index + 1, iteration, length - 1, guess, plain, done);
 	}
 	for(unsigned int i = 0; i < 26; i++) {
-		sprintf(guess + index, "%c", alpha_upper[i]);
+		guess[index] = alpha_upper[i];
+		guess[index+1] = '\0';
 		generate(cipher, cipher_len, index + 1, iteration, length - 1, guess, plain, done);
 	}
 	for(unsigned int i = 0; i < 10; i++) {
-		sprintf(guess + index, "%c", alpha_digit[i]);
+		guess[index] = alpha_digit[i];
+		guess[index+1] = '\0';
 		generate(cipher, cipher_len, index + 1, iteration, length - 1, guess, plain, done);
 	}
 }
