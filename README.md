@@ -7,6 +7,7 @@ This is the start of my miscellaneous one-file C programs.
  - break.c - Simple XOR encryption scheme with brute force cracker.
  - crypt.c - Simple XOR encryption scheme.
  - crack.c - Simple brute force algorithm for plain text passwords.
+ - pass.c  - Better brute force algorithm (it also tries subpasswords).
 
 ### Notes
 
