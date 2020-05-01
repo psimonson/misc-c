@@ -1,5 +1,5 @@
 /* Program to encrypt data and crack a
- * password by Philip R. Simonson.
+ * XOR encryption cipher by Philip R. Simonson.
  */
 
 #include <stdio.h>
@@ -7,8 +7,9 @@
 #include <stdbool.h>
 #include <time.h>
 
-#define MAXBUFF	64 // Maximum input buffer.
-#define MAXPASS	24 // Maximum length of guess.
+#define MAXBUF	64 // Maximum input buffer.
+#define MAXPWD	24 // Maximum length of guess.
+#define SECRET	"abcd" // Secret passphrase used for encrypting/decrypting.
 
 // Define the lowercase characters used for cracking.
 const char alpha_lower[] = {
@@ -27,7 +28,7 @@ const char alpha_digit[] = {
  */
 char *crypt(const char *data, int len, const char *hash)
 {
-	static char temp[MAXBUFF];
+	static char temp[MAXBUF];
 	int key_len = strlen(hash);
 	int i, j, k;
 
@@ -45,23 +46,32 @@ void generate(const char *cipher, int cipher_len, unsigned int index,
 	unsigned int iteration, unsigned int length, char *guess,
 	const char *plain, bool *done)
 {
+	static unsigned int start = 0;
+
 	if(length == 0) {
 		memset(guess + index, 0, 1);
 #ifdef DEBUG
 		printf("iteration %u, guess: %s\n", iteration, guess);
 #endif
-		const char *decrypted = crypt(cipher, strlen(cipher), guess);
-		if(!strcmp(decrypted, plain)) { // Got the password.
+
+		// Try to decrypt the cipher and check against the original text.
+		const char *decrypted = crypt(cipher, cipher_len, guess);
+		if(!strncmp(plain, decrypted, strlen(decrypted))) { // Got the password.
 			printf("Decrypted: %s\n"
 				"*** Password Found ***\n"
 				"Secret password is %s\n", decrypted, guess);
 			*done = true;
 			return;
-		} else if(index >= MAXPASS) { // Check for max password length.
-			printf("*** Maximum Length Reached ***\nMaximum length is %i\n",
-			MAXPASS);
-			*done = true;
-			return;
+		} else {
+			if((clock()-start)/CLOCKS_PER_SEC >= 30) {
+				printf("*** Information Report ***\n"
+					"**************************\n"
+					"Current Length: %u\n"
+					"Current guess: %s\n"
+					"**************************\n",
+					index, guess);
+				start = clock();
+			}
 		}
 		return;
 	}
@@ -88,15 +98,15 @@ int crack(const char *cipher, int cipher_len, const char *plain)
 	bool done = false;
 
 	// Check if given password is greater than allowed.
-	if(cipher_len >= MAXBUFF || strlen(plain) >= MAXBUFF) {
+	if(cipher_len >= MAXBUF || strlen(plain) >= MAXBUF) {
 		printf("*** Maximum Cipher/Plain Text Length Reached ***\n"
-			"This program cannot exceed: %i\n", MAXBUFF);
+			"This program cannot exceed: %i\n", MAXBUF);
 		return 1;
 	}
 
 	while(!done) {
 		static unsigned int length = 1;
-		static char temp_buf[MAXPASS+1];
+		static char temp_buf[MAXPWD+1];
 		++iteration;
 		memset(temp_buf, 0, sizeof(temp_buf));
 		generate(cipher, cipher_len, 0, iteration, length, temp_buf, plain, &done);
@@ -122,12 +132,12 @@ int get_string(char *s, int size)
  */
 int main(void)
 {
-	char buf[MAXBUFF], buf2[MAXBUFF];
+	char buf[MAXBUF], buf2[MAXBUF];
 
 	// Get plain text from user to break an XOR encryption hash.
 	printf("Enter plain text: ");
 	int len = get_string(buf, sizeof(buf));
-	const char *cipher = crypt(buf, len, "AB");
+	const char *cipher = crypt(buf, len, SECRET);
 	strncpy(buf2, cipher, len);
 	printf("Encrypted: %s\n", buf2);
 	return crack(buf2, len, buf);
