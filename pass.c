@@ -1,4 +1,4 @@
-/* Program to crack a password with brute force
+/* Program to crack a password with very good brute force (maybe inefficient)
  * by Philip R. Simonson.
  */
 
@@ -50,18 +50,24 @@ bool brute_force(char *pass, int size, const char *password)
 												test[9] = arr[d];
 												test[10] = arr[c];
 
-												for(int q = 0, r = MAXPWD-1; q < MAXPWD; q++, r--)
+												for(int q = 0, r = MAXPWD-1; q < MAXPWD; q++, r--) {
 													for(int s = 0; s < q; s++) {
-													strncpy(pass, test + s, r);
-													pass[r] = 0;
+														strncpy(pass, test+s, r);
+														pass[r] = 0;
 
-													if(!strcmp(pass, password)) {
-														printf("Password is %s\n", pass);
-														printf("Total time (in seconds): %lu\n",
-															(clock()-start)/CLOCKS_PER_SEC);
-														return true;
-													} else {
-														printf("Current guess: %s\n", pass);
+														if(!strcmp(pass, password)) {
+															printf("Password is %s\n", pass);
+															printf("Total time (in seconds): %lu\n",
+																(clock()-start)/CLOCKS_PER_SEC);
+															return true;
+														} else {
+															static clock_t clk = 0;
+															if((clock()-clk)/CLOCKS_PER_SEC > 29) {
+															clk = clock();
+																printf("Time passed %lu - Current guess: %s\n",
+																	(clock()-start)/CLOCKS_PER_SEC, pass);
+															}
+														}
 													}
 												}
 											}
