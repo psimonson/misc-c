@@ -10,6 +10,7 @@ I will be adding much more in do time. For now just these are here. More to come
  - crypt.c - Simple XOR encryption scheme.
  - crack.c - Simple brute force algorithm for plain text passwords.
  - pass.c  - Better brute force algorithm (it also tries subpasswords).
+ - vector.c - Simple C++ Vector for C, using the preprocessor (Use with C89-C11).
 
 ### Notes
 
