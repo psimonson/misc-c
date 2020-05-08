@@ -84,24 +84,51 @@
 } while(0)
 #endif
 
+/* Copy vector (from) to vector (to). */
+#define vector_copy(from, to) do { \
+	size_t __i, __cur_size = vector_size(from); \
+	for(__i = 0; __i < __cur_size; __i++) { \
+		vector_push_back(to, from[__i]); \
+	} \
+} while(0)
+
 /* ------------------------ Finish of Vector ------------------------- */
 
 int main(void)
 {
-	int *v = NULL;
+#define PRNT_VAR(var, message) printf( #var ": " message "\n");
+	int *v1 = NULL, *v2 = NULL;
 
-	vector_push_back(v, 1);
-	vector_push_back(v, 2);
-	vector_push_back(v, 3);
-	vector_push_back(v, 4);
-	vector_push_back(v, 5);
-	vector_push_back(v, 6);
-	printf("Printing with array subscript...\n");
-	for(unsigned int i = 0; i < vector_size(v); i++)
-		printf("Test %u\n", v[i]);
-	printf("Printing with pointer...\n");
-	for(int *p = vector_begin(v); p != vector_end(v); p++)
+	/* Copy values to vector (v1) */
+	vector_push_back(v1, 1);
+	vector_push_back(v1, 2);
+	vector_push_back(v1, 3);
+	vector_push_back(v1, 4);
+	vector_push_back(v1, 5);
+	vector_push_back(v1, 6);
+
+	/* Vector one (v1) */
+	PRNT_VAR(v1, "Printing with array subscript...");
+	for(unsigned int i = 0; i < vector_capacity(v1); i++)
+		printf("Test %u\n", v1[i]);
+	PRNT_VAR(v1, "Printing with pointer...");
+	for(int *p = vector_begin(v1); p != vector_end(v1); p++)
 		printf("Test %d\n", *p);
-	vector_free(v);
+
+	/* Copy vector (v1) to new (v2) */
+	vector_copy(v1, v2);
+
+	/* Vector two (v2) */
+	PRNT_VAR(v2, "Printing with array subscript...");
+	for(unsigned int i = 0; i < vector_capacity(v2); i++)
+		printf("Test %u\n", v2[i]);
+	PRNT_VAR(v2, "Printing with pointer...");
+	for(int *p = vector_begin(v2); p != vector_end(v2); p++)
+		printf("Test %d\n", *p);
+
+	/* Cleanup vectors */
+	vector_free(v1);
+	vector_free(v2);
+
 	return 0;
 }
