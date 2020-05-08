@@ -61,8 +61,8 @@
 	} \
 } while(0)
 
-#define vector_begin(vec) ((vec) ? &((vec)[0]) : NULL);
-#define vector_end(vec) ((vec) ? &((vec)[vector_capacity(vec)]) : NULL);
+#define vector_begin(vec) ((vec) ? &(vec)[0] : NULL)
+#define vector_end(vec) ((vec) ? &(vec)[vector_capacity(vec)] : NULL)
 
 #ifdef LOGARITHMIC_GROWTH
 #define vector_push_back(vec, value) do { \
@@ -96,8 +96,12 @@ int main(void)
 	vector_push_back(v, 4);
 	vector_push_back(v, 5);
 	vector_push_back(v, 6);
+	printf("Printing with array subscript...\n");
 	for(unsigned int i = 0; i < vector_size(v); i++)
-		printf("Test %d\n", v[i]);
+		printf("Test %u\n", v[i]);
+	printf("Printing with pointer...\n");
+	for(int *p = vector_begin(v); p != vector_end(v); p++)
+		printf("Test %d\n", *p);
 	vector_free(v);
 	return 0;
 }
