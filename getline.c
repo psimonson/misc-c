@@ -32,40 +32,29 @@ long get_line(char **lineptr, FILE *fp)
 
 	while((nbytes = fread(p = buf, 1, sizeof(buf), fp)) > 0) {
 		if(memchr(buf, '\n', sizeof(buf)) != 0) {
-			ptr = realloc(*lineptr, size+nbytes);
+			ptr = realloc(*lineptr, size+nbytes+2);
 			if(ptr == NULL) return -1;
 			*lineptr = ptr;
 			memcpy(&ptr[size], buf, nbytes);
 			size += nbytes;
-			ptr[size] = '\0';
 		} else {
 			break;
 		}
 	}
+	(*lineptr)[size++] = '\n';
+	(*lineptr)[size] = '\0';
 	return size;
 }
 /* Entry point for program.
  */
-int main(int argc, char **argv)
+int main(void)
 {
 	char *line = NULL;
-	FILE *fp;
-
-	if(argc != 2) {
-		fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-		return 1;
-	}
-
-	fp = fopen(argv[1], "rt");
-	if(fp == NULL) {
-		perror("File error");
-		return 1;
-	}
-
+	FILE *fp = fopen("bitfiddle.c", "rt");
+	if(fp == NULL) return 1;
 	while(get_line(&line, fp) != EOF) {
 		printf("%s", line);
 	}
-
 	fclose(fp);
 	free(line);
 	return 0;
